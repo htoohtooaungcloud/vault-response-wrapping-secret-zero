@@ -1,0 +1,7 @@
+# Use the official nginx image as a base
+FROM nginx:latest
+
+# Install necessary packages
+RUN apt-get update && \
+    apt-get install -y dnsutils \
+    iputils-ping 

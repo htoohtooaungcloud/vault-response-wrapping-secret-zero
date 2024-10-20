@@ -1,0 +1,169 @@
+version: '3.9'
+name: hellocloud
+services:
+
+  vault-server-1:
+    image: hashicorp/vault:1.17
+    container_name: vault-server-1
+    hostname: vault-server-1
+    restart: on-failure
+    env_file:
+    - ./vault_kms_auto_unseal.env
+    ports:
+      - "8200:8200"
+    environment:
+      VAULT_ADDR: "http://0.0.0.0:8200"
+      VAULT_API_ADDR: "http://vault-server-1:8200"
+      VAULT_CLUSTER_ADDR: "http://vault-server-1:8201"
+    cap_add:
+      - IPC_LOCK
+    volumes:
+      - node-volume-a:/opt/vault/data:rw
+      - ./vault-server-1:/vault/config:rw
+    healthcheck:
+      retries: 3
+    networks:
+      - vault-cluster
+    entrypoint: vault server -log-level debug -config=/vault/config/config.hcl
+  
+  vault-server-2:
+    image: hashicorp/vault:1.17
+    container_name: vault-server-2
+    hostname: vault-server-2
+    restart: on-failure
+    env_file:
+    - ./vault_kms_auto_unseal.env
+    ports:
+      - "8210:8200"
+    environment:
+      VAULT_ADDR: "http://0.0.0.0:8210"
+      VAULT_API_ADDR: "http://vault-server-2:8210"
+      VAULT_CLUSTER_ADDR: "http://vault-server-2:8201"
+    cap_add:
+      - IPC_LOCK
+    volumes:
+      - node-volume-b:/opt/vault/data:rw
+      - ./vault-server-2:/vault/config:rw
+    healthcheck:
+      retries: 3
+    networks:
+      - vault-cluster
+    entrypoint: vault server -log-level debug -config=/vault/config/config.hcl
+
+  vault-server-3:
+    image: hashicorp/vault:1.17
+    container_name: vault-server-3
+    hostname: vault-server-3
+    restart: on-failure
+    env_file:
+    - ./vault_kms_auto_unseal.env
+    ports:
+      - "8220:8200"
+    environment:
+      VAULT_ADDR: "http://0.0.0.0:8220"
+      VAULT_API_ADDR: "http://vault-server-3:8220"
+      VAULT_CLUSTER_ADDR: "http://vault-server-3:8201"
+    cap_add:
+      - IPC_LOCK
+    volumes:
+      - node-volume-c:/opt/vault/data:rw
+      - ./vault-server-3:/vault/config:rw
+    healthcheck:
+      retries: 3
+    networks:
+      - vault-cluster
+    entrypoint: vault server -log-level debug -config=/vault/config/config.hcl
+
+  jenkins:
+    build:
+      context: .
+      dockerfile: Dockerfile.jenkins
+    hostname: jenkins
+    privileged: true
+    extra_hosts:
+      - "vault.htoohtoo.cloud:192.168.1.43"
+    restart: on-failure
+    environment:
+      DOCKER_HOST: "unix:///var/run/docker.sock"
+    ports:
+      - '8080:8080'
+      - '50000:50000'
+    volumes:
+      - 'jenkins_data:/var/jenkins_home'
+      - '/var/run/docker.sock:/var/run/docker.sock'
+    healthcheck:
+      retries: 5
+    networks:
+      - vault-jenkins
+
+  nginx:
+    build:
+      context: .
+      dockerfile: Dockerfile.nginx
+    hostname: nginx-proxy
+    container_name: nginx-server
+    ports:
+      - "80:80"     # Map HTTP port
+      - "443:443"   # Map Jenkins HTTPS port
+      - "8443:8443" # Map Vault HTTPS port
+    volumes:
+      - ./nginx/conf:/etc/nginx/conf.d        # Mount custom configuration files
+      - ./nginx/certbot:/var/www/certbot      # Mount for cerbot data
+      - ./nginx/certificates:/etc/letsencrypt # Mount certs file location to share together with certbot
+      - ./nginx/www:/usr/share/nginx/html     # Mount web content
+      - ./nginx/nginx-config/nginx.conf:/etc/nginx/nginx.conf
+    restart: unless-stopped
+    networks:
+      - kind
+      - vault-jenkins
+      - vault-cluster
+
+# for terraform backend, this backend support * state file locking *
+  postgresql:
+    image: postgres:16
+    container_name: postgresql-db-01
+    env_file:
+    - ./db.env
+    hostname: postgresql-db-01
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${PGUSER}
+      POSTGRES_PASSWORD: ${PGPASSWORD}
+    ports:
+      - 5432:5432
+    volumes:
+      - postgresql_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - kind
+      - vault-jenkins
+
+  # certbot:
+  #   image: certbot/certbot
+  #   container_name: certbot
+  #   volumes:
+  #     - ./nginx/certbot:/var/www/certbot
+  #     - ./nginx/certificates:/etc/letsencrypt
+  #   entrypoint: "/bin/sh -c 'trap exit TERM; while :; do certbot renew --webroot --webroot-path /var/www/certbot/ --force-renewal sleep 604800 & wait $${!}; done;'"
+  #   networks:
+  #     - vault-jenkins
+  #     - vault-cluster
+
+volumes:
+  node-volume-a: {}
+  node-volume-b: {}
+  node-volume-c: {}
+  postgresql_data: {}
+  jenkins_data:
+    driver: local
+
+networks:
+  kind:
+    external: true
+  vault-jenkins:
+  vault-cluster:
+    driver: bridge
