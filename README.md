@@ -2,7 +2,7 @@
 
 ## Table of Contents
 
-- [Project] (#project)
+- [Project](#project)
 - [Introduction](#introduction)
 - [Features](#features)
 - [Scope](#scope)1. Install Docker engine, Terraform and docker compose plugin.
