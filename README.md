@@ -52,8 +52,12 @@
 ## Prerequisite: 
 
 1. Install Docker engine, Terraform and docker compose plugin.
-2. Create AWS KMS for Auto-Unsealing mechanism using `Terraform`. Credentials will be export as `vault_kms_auto_unseal.env` and Vault Cluster is ready to consume these
-3. Before run any terraform commands, must spin up the `postgresql-db-01` container first and configure as needed. Refer to `DB_README.md`. 
+2. Create AWS KMS for Auto-Unsealing mechanism using `Terraform`. Credentials will be export as `vault_kms_auto_unseal.env` and Vault Cluster will pick that file while running docker-compose file. 
+3. Before run any terraform commands, must spin up the `postgresql-db-01` container first and configure as needed. Refer to `DB_README.md`.
+4. Highly encourage to create new terraform local workspace by running `terraform workspace new <your-workspace-name>`. eg; 
+```
+terraform workspace new vault-aws-kms
+```
 
 ### SSL/TLS certificate generate using certbot
 💡 Must have at least one domain for DNS Challenge to get TLS Cert
