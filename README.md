@@ -5,10 +5,7 @@
 - [Introduction](#introduction)
 - [Features](#features)
 - [Scope](#scope)
-<<<<<<< HEAD
-=======
 - [Goal](#goal)
->>>>>>> dc7f7f3 (Modify jenkinsfile)
 - [Architecture](#architecture)
 - [Getting Started](#getting-started)
   - [Prerequisites](#prerequisites)
@@ -32,40 +29,12 @@
 - Provide powerful mechanism for information sharing in many environments.
 - Best option is to provider cover for the secrets, be able to detect middle-man interception **malfeasance** and limit-lifetimee of the secret exppsure.
 - CI/CD pipeline provides significant automation benefits for your infrastructure and application development workflows.
-<<<<<<< HEAD
-
-=======
 ------------------------------------------------------------------------------------------------------------------------------------------
->>>>>>> dc7f7f3 (Modify jenkinsfile)
 ## Scope
 - **Vault** containers will run in a High Availability (HA) cluster for redundancy.
 - **Nginx** will act as a reverse proxy and load balancer.
 - **Jenkins** will handle the CI/CD pipeline automation.
 - **Certbot** will generate SSL/TLS certificates. TLS is optional but will require adjustments to configuration files if omitted.
-<<<<<<< HEAD
-
-
-### Prerequisite: 
-
-- Need to configure AWS KMS for Auto-Unsealing mechanism and pass those AWS credentials into `vault-servers` containers.
-- Install Docker engine, and docker compose plugin
-
-### SSL/TLS certificate generate using certbot
-💡 Must have at least one domain for DNS Challenge to get TLS Cert
-
-#### Exec into Cert bot container
-```
-docker exec -it certbot sh
-```
-### Generate the cert
-```
-certbot certonly --manual --preferred-challenges dns -d name.yourdomain --email customemail@gmail.com
-```
-- In the terminal, you will be prompted to create a DNS TXT record in your DNS management system
-
-![dns-txt-record-dns-challenge-to-generate-ssl-cert](https://github.com/user-attachments/assets/5c89b27d-1e53-4912-b2e1-8679abb110de)
-
-=======
 - **Terraform** for provision the Cloud API resources as Infrastructure as Code automation.
 - **Postgresql** will be serve as database server for terraform `backend` for now.
 ------------------------------------------------------------------------------------------------------------------------------------------
@@ -73,7 +42,6 @@ certbot certonly --manual --preferred-challenges dns -d name.yourdomain --email 
 1. Jenkins Pipeline should securely retrieve secrets with a narrow scope, and the `Token` must expire immediately after the secrets are retrieved.
 ![Vault-Trusted-Orchestrator](https://github.com/user-attachments/assets/6ac9fcb4-79a1-488b-aef7-8bce0f57244b)
 **Figure-1** The Goal of the Project
->>>>>>> dc7f7f3 (Modify jenkinsfile)
 
 2. Vault must be running with `Auto-Unsealing` method using `AWS KMS`.
 ------------------------------------------------------------------------------------------------------------------------------------------
