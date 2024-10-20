@@ -2,9 +2,12 @@
 
 ## Table of Contents
 
+- [Project] (#project)
 - [Introduction](#introduction)
 - [Features](#features)
-- [Scope](#scope)
+- [Scope](#scope)1. Install Docker engine, Terraform and docker compose plugin.
+2. Create AWS KMS for Auto-Unsealing mechanism using `Terraform`. Credentials will be export as `vault_kms_auto_unseal.env` and Vault Cluster is ready to consume these
+3. Before run any terraform commands, must spin up the `postgresql-db-01` container first and configure as needed. Refer to `DB_README.md`. 
 - [Goal](#goal)
 - [Architecture](#architecture)
 - [Getting Started](#getting-started)
@@ -14,7 +17,8 @@
     - [Docker Deployment](#docker-deployment)
       - [Using Docker Compose](#using-docker-compose)
 - [Contributing](#contributing)
-
+------------------------------------------------------------------------------------------------------------------------------------------
+## Project : (*Secret-Zero*)
 
 ## Introduction
 
