@@ -125,6 +125,7 @@ pipeline {
                 script {
                     sh """
                         // Build Docker image
+                        su jenkins
                         cd $WORKSPACE
                         docker build -f $WORKSPACE/todo-app/Dockerfile -t ${env.CONTAINER_REGISTRY}/llm-obj-discovery:$BUILD_NUMBER $WORKSPACE/.
                         // Log in to Docker registry
