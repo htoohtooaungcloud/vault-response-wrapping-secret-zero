@@ -126,15 +126,15 @@ pipeline {
                     sh """
                         // Build Docker image
                         cd $WORKSPACE
-                        sudo docker build -f $WORKSPACE/todo-app/Dockerfile -t ${env.CONTAINER_REGISTRY}/llm-obj-discovery:$BUILD_NUMBER $WORKSPACE/.
+                        docker build -f $WORKSPACE/todo-app/Dockerfile -t ${env.CONTAINER_REGISTRY}/llm-obj-discovery:$BUILD_NUMBER $WORKSPACE/.
                         // Log in to Docker registry
-                        echo ${env.CR_PASSWORD} | sudo docker login -u ${env.CR_USERNAME} --password-stdin
+                        echo ${env.CR_PASSWORD} | docker login -u ${env.CR_USERNAME} --password-stdin
                         // Build Number Push
-                        sudo docker push ${env.CONTAINER_REGISTRY}/llm-obj-discovery:$BUILD_NUMBER
+                        docker push ${env.CONTAINER_REGISTRY}/llm-obj-discovery:$BUILD_NUMBER
                         // Tag Docker Image
-                        sudo docker tag ${env.CONTAINER_REGISTRY}/llm-obj-discovery:$BUILD_NUMBER ${env.CONTAINER_REGISTRY}/llm-obj-discovery:${params.ImageTag}
+                        docker tag ${env.CONTAINER_REGISTRY}/llm-obj-discovery:$BUILD_NUMBER ${env.CONTAINER_REGISTRY}/llm-obj-discovery:${params.ImageTag}
                         // Push Ready Docker Image
-                        sudo docker push ${env.CONTAINER_REGISTRY}/llm-obj-discovery:${params.ImageTag}
+                        docker push ${env.CONTAINER_REGISTRY}/llm-obj-discovery:${params.ImageTag}
                     """
                 }
             }
