@@ -6,7 +6,10 @@ storage "raft" {
     leader_api_addr = "http://vault-server-1:8200"
   }
   retry_join {
-    leader_api_addr = "http://vault-server-1:8200"
+    leader_api_addr = "http://vault-server-2:8200"
+  }
+  retry_join {
+    leader_api_addr = "http://vault-server-3:8200"
   }
 }
 listener "tcp" {
@@ -20,7 +23,7 @@ seal "awskms" {
   region     = "${AWS_REGION}"
   kms_key_id = "${VAULT_AWSKMS_SEAL_KEY_ID}"
 }
-api_addr = "http://vault-server-2:8201"
+api_addr = "http://vault-server-2:8210"
 cluster_addr = "http://vault-server-2:8201"
 cluster_name = "vault-ha-cluster"
 ui = true
