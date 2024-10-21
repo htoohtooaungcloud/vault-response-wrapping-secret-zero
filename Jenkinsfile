@@ -1,10 +1,14 @@
 pipeline {
     agent any
+    parameters {
+        text(defaultValue: "latest", name: 'ImageTag', description: 'Define the Container Image Tag')
+    }
     environment {
         VAULT_ADDR = 'https://vault.htoohtoo.cloud:8443' // Replace with your Vault server address
         VAULT_BIN = "/usr/local/bin/vault" // Vault Binary Variable
         JENKINS_TRUSTED_ENTITY_ROLE = credentials('trusted-entity-role-id') // Credential stored in Jenkins environment
         JENKINS_TRUSTED_ENTITY_SECRET = credentials('trusted-entity-secret-id') // Credential stored in Jenkins environment
+        CONTAINER_REGISTRY = 'harbor.htoohtoo.cloud/hc-genai'
     }
     stages {
         stage('Checkout Code') {
@@ -12,7 +16,7 @@ pipeline {
                 script {
                     // Perform Git checkout using scmGit
                     checkout scmGit(
-                        branches: [[name: 'main']],
+                        branches: [[name: 'genai-dev']],
                         userRemoteConfigs: [[credentialsId:  'jenkins-github',
                             url: 'git@github.com:htoohtooaungcloud/vault-response-wrapping-secret-zero.git']]
                     )
@@ -112,6 +116,26 @@ pipeline {
                     // Store the fetched username and password in environment variables
                     env.CR_USERNAME = username
                     env.CR_PASSWORD = password
+                }
+            }
+        }
+        stage("Build, Tag and Push LLM Object Discory Docker Image") {
+            when { expression {params.MessageProcessor} }
+            steps {
+                script {
+                    sh """
+                        // Build Docker image
+                        cd $WORKSPACE
+                        docker build -f $WORKSPACE/todo-app/Dockerfile -t ${env.CONTAINER_REGISTRY}/llm-obj-discovery:$BUILD_NUMBER $WORKSPACE/.
+                        // Log in to Docker registry
+                        'echo ${env.CR_PASSWORD} | docker login -u ${env.CR_USERNAME} --password-stdin'
+                        // Build Number Push
+                        docker push ${env.CONTAINER_REGISTRY}/llm-obj-discovery:$BUILD_NUMBER
+                        // Tag Docker Image
+                        docker tag ${env.CONTAINER_REGISTRY}/llm-obj-discovery:$BUILD_NUMBER ${env.DockerRegistry}/llm-obj-discovery:${params.ImageTag}
+                        // Push Ready Docker Image
+                        docker push ${env.CONTAINER_REGISTRY}/llm-obj-discovery:${params.ImageTag}
+                    """
                 }
             }
         }
