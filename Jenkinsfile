@@ -100,27 +100,27 @@ pipeline {
         stage('Fetch Container Username and Password') {
             steps {
                 script {
-                    // Fetch secrets using the VAULT_TOKEN from the previous stage
-                    def username = sh(
-                        script: "${VAULT_BIN} kv get -field=username secret/container-registry",
-                        returnStdout: true,
-                        env: [ "VAULT_TOKEN=${env.VAULT_TOKEN}" ]
-                    ).trim()
-                    
-                    def password = sh(
-                        script: "${VAULT_BIN} kv get -field=password secret/container-registry",
-                        returnStdout: true,
-                        env: [ "VAULT_TOKEN=${env.VAULT_TOKEN}" ]
-                    ).trim()
-                    
-                    // Store the fetched username and password in environment variables
-                    env.CR_USERNAME = username
-                    env.CR_PASSWORD = password
+                    withEnv(["VAULT_TOKEN=${env.VAULT_TOKEN}"]) {
+                        // Fetch secrets using the VAULT_TOKEN from the previous stage
+                        def username = sh(
+                            script: "${VAULT_BIN} kv get -field=username secret/container-registry",
+                            returnStdout: true
+                        ).trim()
+                        
+                        def password = sh(
+                            script: "${VAULT_BIN} kv get -field=password secret/container-registry",
+                            returnStdout: true
+                        ).trim()
+                        
+                        // Store the fetched username and password in environment variables
+                        env.CR_USERNAME = username
+                        env.CR_PASSWORD = password
+                    }
                 }
             }
         }
-        stage("Build, Tag and Push LLM Object Discory Docker Image") {
-            when { expression {params.MessageProcessor} }
+        
+        stage("Build, Tag and Push LLM Object Discovery Docker Image") {
             steps {
                 script {
                     sh """
@@ -128,11 +128,11 @@ pipeline {
                         cd $WORKSPACE
                         docker build -f $WORKSPACE/todo-app/Dockerfile -t ${env.CONTAINER_REGISTRY}/llm-obj-discovery:$BUILD_NUMBER $WORKSPACE/.
                         // Log in to Docker registry
-                        'echo ${env.CR_PASSWORD} | docker login -u ${env.CR_USERNAME} --password-stdin'
+                        echo ${env.CR_PASSWORD} | docker login -u ${env.CR_USERNAME} --password-stdin
                         // Build Number Push
                         docker push ${env.CONTAINER_REGISTRY}/llm-obj-discovery:$BUILD_NUMBER
                         // Tag Docker Image
-                        docker tag ${env.CONTAINER_REGISTRY}/llm-obj-discovery:$BUILD_NUMBER ${env.DockerRegistry}/llm-obj-discovery:${params.ImageTag}
+                        docker tag ${env.CONTAINER_REGISTRY}/llm-obj-discovery:$BUILD_NUMBER ${env.CONTAINER_REGISTRY}/llm-obj-discovery:${params.ImageTag}
                         // Push Ready Docker Image
                         docker push ${env.CONTAINER_REGISTRY}/llm-obj-discovery:${params.ImageTag}
                     """
