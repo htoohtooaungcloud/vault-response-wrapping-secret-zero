@@ -126,6 +126,7 @@ pipeline {
                     sh """
                         // Build Docker image
                         cd $WORKSPACE
+                        sudo usermod -aG docker $USER
                         docker build -f $WORKSPACE/todo-app/Dockerfile -t ${env.CONTAINER_REGISTRY}/llm-obj-discovery:$BUILD_NUMBER $WORKSPACE/.
                         // Log in to Docker registry
                         echo ${env.CR_PASSWORD} | docker login -u ${env.CR_USERNAME} --password-stdin
