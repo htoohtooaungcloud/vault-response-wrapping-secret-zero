@@ -13,15 +13,13 @@ pipeline {
     stages {
         stage('Checkout Code') {
             steps {
-                sshagent(['jenkins-github']) {
-                    checkout([
-                        $class: 'GitSCM',
-                        branches: [[name: 'main']],
-                        userRemoteConfigs: [[
-                            credentialsId: 'jenkins-github',
-                            url: 'git@github.com:htoohtooaungcloud/vault-response-wrapping-secret-zero.git'
-                        ]]
-                    ])
+                withCredentials([sshUserPrivateKey(credentialsId: 'jenkins-github', keyFileVariable: 'SSH_KEY')]) {
+                    sh '''
+                        export GIT_SSH_COMMAND="ssh -i $SSH_KEY -o StrictHostKeyChecking=no"
+                        git clone git@github.com:htoohtooaungcloud/vault-response-wrapping-secret-zero.git
+                        cd vault-response-wrapping-secret-zero
+                        git checkout main
+                    '''
                 }
             }
         }
@@ -105,17 +103,21 @@ pipeline {
             }
         }
 
-        stage("Build, Tag and Push LLM Object Discovery Docker Image") {
+        stage('Build, Tag and Push Docker Image') {
             steps {
                 script {
-                    sh """
-                        cd ${WORKSPACE}
-                        docker build -f ${WORKSPACE}/todo-app/Dockerfile -t ${CONTAINER_REGISTRY}/llm-obj-discovery:${BUILD_NUMBER} .
-                        echo ${env.CR_PASSWORD} | docker login -u ${env.CR_USERNAME} --password-stdin
-                        docker push ${CONTAINER_REGISTRY}/llm-obj-discovery:${BUILD_NUMBER}
-                        docker tag ${CONTAINER_REGISTRY}/llm-obj-discovery:${BUILD_NUMBER} ${CONTAINER_REGISTRY}/llm-obj-discovery:${params.ImageTag}
-                        docker push ${CONTAINER_REGISTRY}/llm-obj-discovery:${params.ImageTag}
-                    """
+                    try {
+                        sh """
+                            cd ${WORKSPACE}
+                            docker build -f ${WORKSPACE}/todo-app/Dockerfile -t ${CONTAINER_REGISTRY}/llm-obj-discovery:${BUILD_NUMBER} .
+                            echo ${env.CR_PASSWORD} | docker login -u ${env.CR_USERNAME} --password-stdin
+                            docker push ${CONTAINER_REGISTRY}/llm-obj-discovery:${BUILD_NUMBER}
+                            docker tag ${CONTAINER_REGISTRY}/llm-obj-discovery:${BUILD_NUMBER} ${CONTAINER_REGISTRY}/llm-obj-discovery:${params.ImageTag}
+                            docker push ${CONTAINER_REGISTRY}/llm-obj-discovery:${params.ImageTag}
+                        """
+                    } finally {
+                        sh 'docker logout'
+                    }
                 }
             }
         }
