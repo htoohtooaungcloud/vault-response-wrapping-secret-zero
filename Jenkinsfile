@@ -18,7 +18,7 @@ pipeline {
                     checkout scmGit(
                         branches: [[name: 'genai-dev']],
                         userRemoteConfigs: [[credentialsId:  'jenkins-github',
-                            url: 'https://github.com/htoohtooaungcloud/vault-response-wrapping-secret-zero.git']]
+                            url: 'git@github.com:htoohtooaungcloud/vault-response-wrapping-secret-zero.git']]
                     )
                 }
             }
