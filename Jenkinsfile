@@ -13,14 +13,17 @@ pipeline {
     stages {
         stage('Checkout Code') {
             steps {
-                script {
-                    // Perform Git checkout using scmGit
-                    checkout scmGit(
-                        branches: [[name: 'genai-dev']],
-                        userRemoteConfigs: [[credentialsId:  'jenkins-github',
-                            url: 'git@github.com:htoohtooaungcloud/vault-response-wrapping-secret-zero.git']]
-                    )
+                sshagent(['jenkins-github']) {
+                    checkout([
+                        $class: 'GitSCM',
+                        branches: [[name: 'main']],
+                        userRemoteConfigs: [[
+                            credentialsId: 'jenkins-github',
+                            url: 'git@github.com:htoohtooaungcloud/vault-response-wrapping-secret-zero.git'
+                        ]]
+                    ])
                 }
+            }
             }
         }
 

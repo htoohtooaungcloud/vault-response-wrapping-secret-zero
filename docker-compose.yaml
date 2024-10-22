@@ -80,6 +80,7 @@ services:
       dockerfile: Dockerfile.jenkins
     hostname: jenkins
     privileged: true
+    user: root
     extra_hosts:
       - "vault.htoohtoo.cloud:192.168.1.43"
     restart: on-failure
