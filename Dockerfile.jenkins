@@ -52,7 +52,7 @@ RUN wget https://github.com/cilium/cilium-cli/releases/download/v0.16.19/cilium-
     mv ./cilium /usr/local/bin/ 
 
 # Create 'docker' group and add Jenkins user for dind
-RUN groupadd docker && usermod -aG docker jenkins
+RUN groupadd docker && usermod -aG docker jenkins && newgrp docker
 
 # # Switch back to the Jenkins user
 USER jenkins
