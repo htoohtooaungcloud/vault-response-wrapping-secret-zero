@@ -79,13 +79,14 @@ services:
       context: .
       dockerfile: Dockerfile.jenkins
     hostname: jenkins
-    privileged: true
-    user: root
+    privileged: false
+    user: jenkins
     extra_hosts:
       - "vault.htoohtoo.cloud:192.168.1.43"
     restart: on-failure
     environment:
       DOCKER_HOST: "unix:///var/run/docker.sock"
+      # JENKINS_OPTS: --prefix=/jenkins
     ports:
       - '8080:8080'
       - '50000:50000'

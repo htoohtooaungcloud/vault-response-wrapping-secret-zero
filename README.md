@@ -112,12 +112,20 @@ docker logs -f jenkins
 ```
 ### Log in to Jenkins using this password and just change the password immidiately
 ```
+*************************************************************
+*************************************************************
+*************************************************************
+
 Jenkins initial setup is required. An admin user has been created and a password generated.
 Please use the following password to proceed to installation:
 
-50492323cfd4475e814d74da74621644
+3d590fdb69e24a739bd6f8156a3866a6
 
 This may also be found at: /var/jenkins_home/secrets/initialAdminPassword
+
+*************************************************************
+*************************************************************
+*************************************************************
 
 ```
 --------------------------------------------------------------------------------------------------------------------------------------

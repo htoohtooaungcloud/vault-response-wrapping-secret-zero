@@ -17,11 +17,45 @@ RUN apt-get update && \
     apt-get install -y docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin \
     net-tools zip curl jq tree unzip wget siege apt-transport-https ca-certificates software-properties-common gnupg
 
+# Install HashiCorp Vault Binary
+RUN wget https://releases.hashicorp.com/vault/1.18.0/vault_1.18.0_linux_amd64.zip && \
+    unzip vault_1.18.0_linux_amd64.zip && \
+    rm -rf LICENSE.* && \
+    chmod +x vault && \
+    mv vault /usr/local/bin/
+
+# Install Terraform Binary
+RUN wget https://releases.hashicorp.com/terraform/1.9.8/terraform_1.9.8_linux_amd64.zip && \
+    unzip terraform_1.9.8_linux_amd64.zip && \
+    rm -rf LICENSE.* && \
+    chmod +x terraform && \
+    mv terraform /usr/local/bin/
+
+# Install Kubectl 
+RUN curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl" && \
+    curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl.sha256" && \
+    echo "$(cat kubectl.sha256)  kubectl" | sha256sum --check && \
+    chmod +x kubectl && \
+    mv ./kubectl /usr/local/bin/
+
+# Install Helm 
+RUN wget https://get.helm.sh/helm-v3.16.2-linux-amd64.tar.gz && \
+    tar -zxvf helm-v3.16.2-linux-amd64.tar.gz && \
+    chmod +x linux-amd64/helm && \
+    mv linux-amd64/helm /usr/local/bin/helm && \
+    rm -rf LICENSE
+
+# Install Cilium 
+RUN wget https://github.com/cilium/cilium-cli/releases/download/v0.16.19/cilium-linux-amd64.tar.gz && \
+    tar -zxvf cilium-linux-amd64.tar.gz && \
+    chmod +x cilium && \
+    mv ./cilium /usr/local/bin/ 
+
 # Create 'docker' group and add Jenkins user for dind
 RUN groupadd docker && usermod -aG docker jenkins
 
 # # Switch back to the Jenkins user
-# USER jenkins
+USER jenkins
 
 # Install Jenkins plugins
 RUN jenkins-plugin-cli --plugins "blueocean docker-workflow"
