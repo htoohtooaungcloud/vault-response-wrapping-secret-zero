@@ -123,17 +123,17 @@ pipeline {
             }
         }
 
-        stage('Login to Docker Registry') {
+        stage('Login to Container Registry') {
             steps {
-                withCredentials([string(credentialsId: 'docker-password', passwordVariable: 'CR_PASSWORD', usernameVariable: 'CR_USERNAME']) {
-                    script {
-                        sh """
-                            # Mask the password while logging in
-                            echo '${CR_PASSWORD}' | docker login ${CONTAINER_REGISTRY} -u '${env.CR_USERNAME}' --password-stdin
-                        """
-                    }
+                script {
+                    // Disable echo temporarily to mask credentials
+                    sh """
+                        # Docker registry login (Harbor)
+                        set +x
+                        echo '${env.CR_PASSWORD}' | docker login ${CONTAINER_REGISTRY} -u '${env.CR_USERNAME}' --password-stdin
+                        set -x
+                    """
                 }
-                env: ["VAULT_TOKEN=${env.CR_USERNAME}"], env: ["VAULT_TOKEN=${env.CR_PASSWORD}"]
             }
         }
 
@@ -150,14 +150,12 @@ pipeline {
                         cd ${env.WORKSPACE}/todo-app
                         docker build -f Dockerfile -t ${CONTAINER_REGISTRY}/${CONTAINER_PROJECT}/llm-obj-discovery:$BUILD_NUMBER .
 
-                        # Docker registry login (Harbor)
-                        echo '${CR_PASSWORD}' | docker login ${CONTAINER_REGISTRY} -u '${CR_USERNAME}' --password-stdin
-
                         # Push the image to the registry
                         docker push ${CONTAINER_REGISTRY}/${CONTAINER_PROJECT}/llm-obj-discovery:$BUILD_NUMBER
 
                         # Tag and push the final version
                         docker tag ${CONTAINER_REGISTRY}/${CONTAINER_PROJECT}/llm-obj-discovery:$BUILD_NUMBER ${CONTAINER_REGISTRY}/${CONTAINER_PROJECT}/llm-obj-discovery:${params.ImageTag}
+                        docker images
                         docker push ${CONTAINER_REGISTRY}/${CONTAINER_PROJECT}/llm-obj-discovery:${params.ImageTag}
                     """
                 }
