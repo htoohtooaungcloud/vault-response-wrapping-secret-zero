@@ -120,27 +120,27 @@ pipeline {
             }
         }
         
-        stage("Build, Tag and Push Docker Image")  {
+        stage("Build, Tag and Push Docker Image") {
             steps {
                 script {
                     sh """
-                        // Build Docker image
-                        cd $WORKSPACE/todo-app
-                        chmod 777 -R ${env.WORKSPACE}
-                        echo "Changed Workspace Directory Permission"
-                        echo "Build Docker Image"
-                        docker build -f $WORKSPACE/todo-app/Dockerfile -t ${env.CONTAINER_REGISTRY}/llm-obj-discovery:$BUILD_NUMBER $WORKSPACE/.
-                        // Log in to Docker registry
-                        echo "Login to Container Registry"
+                        # Set proper permissions
+                        find ${env.WORKSPACE} -type d -exec chmod 755 {} +
+                        find ${env.WORKSPACE} -type f -exec chmod 644 {} +
+                        chown -R jenkins:jenkins ${env.WORKSPACE}
+
+                        # Build Docker image
+                        cd ${env.WORKSPACE}/todo-app
+                        docker build -f Dockerfile -t ${env.CONTAINER_REGISTRY}/llm-obj-discovery:$BUILD_NUMBER .
+
+                        # Log in to Docker registry
                         echo ${env.CR_PASSWORD} | docker login -u ${env.CR_USERNAME} --password-stdin
-                        // Build Number Push
-                        echo "1st time push to Container Registry"
+
+                        # Push image to registry
                         docker push ${env.CONTAINER_REGISTRY}/llm-obj-discovery:$BUILD_NUMBER
-                        // Tag Docker Image
-                        echo "Tag the Container Image"
+
+                        # Tag and push the final image
                         docker tag ${env.CONTAINER_REGISTRY}/llm-obj-discovery:$BUILD_NUMBER ${env.CONTAINER_REGISTRY}/llm-obj-discovery:${params.ImageTag}
-                        // Push Ready Docker Image
-                        echo "Push the Tag Final Container Image"
                         docker push ${env.CONTAINER_REGISTRY}/llm-obj-discovery:${params.ImageTag}
                     """
                 }
