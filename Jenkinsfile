@@ -133,7 +133,7 @@ pipeline {
                         cd ${env.WORKSPACE}/todo-app
                         docker build -f Dockerfile -t ${env.CONTAINER_REGISTRY}/llm-obj-discovery:$BUILD_NUMBER .
 
-                        # Log in to Docker registry
+                        # Log in to Docker registry (harbor)
                         'echo ${env.CR_PASSWORD} | docker login -u ${env.CR_USERNAME} --password-stdin'
 
                         # Push image to registry
