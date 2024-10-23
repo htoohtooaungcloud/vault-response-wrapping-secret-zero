@@ -111,6 +111,29 @@ pipeline {
             }
         }
 
+        stage('Fetch Container Username and Password') {
+            steps {
+                script {
+                    // Fetch secrets using the VAULT_TOKEN from the previous stage
+                    def username = sh(
+                        script: "${VAULT_BIN} kv get -field=username secret/container-registry",
+                        returnStdout: true,
+                        env: [ "VAULT_TOKEN=${env.VAULT_TOKEN}" ]
+                    ).trim()
+                    
+                    def password = sh(
+                        script: "${VAULT_BIN} kv get -field=password secret/container-registry",
+                        returnStdout: true,
+                        env: [ "VAULT_TOKEN=${env.VAULT_TOKEN}" ]
+                    ).trim()
+                    
+                    // Store the fetched username and password in environment variables
+                    env.CR_USERNAME = username
+                    env.CR_PASSWORD = password
+                }
+            }
+        }
+
         stage("Build, Tag, and Push Docker Image") {
             steps {
                 withCredentials([usernamePassword(
