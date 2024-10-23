@@ -8,7 +8,8 @@ pipeline {
     environment {
         VAULT_ADDR = 'https://vault.htoohtoo.cloud:8443'
         VAULT_BIN = "/usr/local/bin/vault"
-        CONTAINER_REGISTRY = 'harbor.htoohtoo.cloud/hc-genai'
+        CONTAINER_REGISTRY = 'harbor.htoohtoo.cloud'
+        CONTAINER_PROJECT = 'hc-genai'
         JENKINS_TRUSTED_ENTITY_ROLE = credentials('trusted-entity-role-id') // Vault role credential
         JENKINS_TRUSTED_ENTITY_SECRET = credentials('trusted-entity-secret-id') // Vault secret credential
     }
@@ -133,17 +134,17 @@ pipeline {
 
                         # Build Docker image
                         cd ${env.WORKSPACE}/todo-app
-                        docker build -f Dockerfile -t ${CONTAINER_REGISTRY}/llm-obj-discovery:$BUILD_NUMBER .
+                        docker build -f Dockerfile -t ${CONTAINER_REGISTRY}/${CONTAINER_PROJECT}/llm-obj-discovery:$BUILD_NUMBER .
 
                         # Docker registry login (Harbor)
                         echo '\${CR_PASSWORD}' | docker login ${CONTAINER_REGISTRY} -u '\${CR_USERNAME}' --password-stdin
 
                         # Push the image to the registry
-                        docker push ${CONTAINER_REGISTRY}/llm-obj-discovery:$BUILD_NUMBER
+                        docker push ${CONTAINER_REGISTRY}/${CONTAINER_PROJECT}/llm-obj-discovery:$BUILD_NUMBER
 
                         # Tag and push the final version
-                        docker tag ${CONTAINER_REGISTRY}/llm-obj-discovery:$BUILD_NUMBER ${CONTAINER_REGISTRY}/llm-obj-discovery:${params.ImageTag}
-                        docker push ${CONTAINER_REGISTRY}/llm-obj-discovery:${params.ImageTag}
+                        docker tag ${CONTAINER_REGISTRY}/${CONTAINER_PROJECT}/llm-obj-discovery:$BUILD_NUMBER ${CONTAINER_REGISTRY}/${CONTAINER_PROJECT}/llm-obj-discovery:${params.ImageTag}
+                        docker push ${CONTAINER_REGISTRY}/${CONTAINER_PROJECT}/llm-obj-discovery:${params.ImageTag}
                     """
                 }
             }
