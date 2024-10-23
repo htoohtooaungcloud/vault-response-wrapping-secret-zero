@@ -125,7 +125,8 @@ pipeline {
                 script {
                     sh """
                         // Build Docker image
-                        cd $WORKSPACE
+                        cd $WORKSPACE/todo-app
+                        chmod 777 .
                         echo "Build Docker Image"
                         docker build -f $WORKSPACE/todo-app/Dockerfile -t ${env.CONTAINER_REGISTRY}/llm-obj-discovery:$BUILD_NUMBER $WORKSPACE/.
                         // Log in to Docker registry

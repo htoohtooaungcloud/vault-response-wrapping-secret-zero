@@ -79,13 +79,15 @@ services:
       context: .
       dockerfile: Dockerfile.jenkins
     hostname: jenkins
-    privileged: false
-    user: jenkins
+    # privileged: false
+    # user: root
     extra_hosts:
       - "vault.htoohtoo.cloud:192.168.1.43"
+    group_add:
+        - 997    # Should be the same group id as your host docker
     restart: on-failure
-    environment:
-      DOCKER_HOST: "unix:///var/run/docker.sock"
+    # environment:
+    #   DOCKER_HOST: "unix:///var/run/docker.sock"
       # JENKINS_OPTS: --prefix=/jenkins
     ports:
       - '8080:8080'
@@ -93,8 +95,6 @@ services:
     volumes:
       - 'jenkins_data:/var/jenkins_home'
       - '/var/run/docker.sock:/var/run/docker.sock'
-    # command: |
-    #   /bin/bash -c "groupadd -g $(stat -c '%g' /var/run/docker.sock) docker && exec /usr/local/bin/jenkins.sh"
     healthcheck:
       retries: 5
     networks:
