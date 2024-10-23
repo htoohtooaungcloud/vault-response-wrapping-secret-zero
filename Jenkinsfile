@@ -125,7 +125,7 @@ pipeline {
                 script {
                     sh """
                         // Build Docker image
-                        cd $WORKSPACE
+                        cd $WORKSPACE/todo-app
                         chmod +x -R ${env.WORKSPACE}
                         echo "Changed Workspace Directory Permission"
                         echo "Build Docker Image"
