@@ -1,8 +1,8 @@
 pipeline {
     agent any
-    parameters {
-        text(defaultValue: "latest", name: 'ImageTag', description: 'Define the Container Image Tag')
-    }
+    // parameters {
+    //     text(defaultValue: "latest", name: 'ImageTag', description: 'Define the Container Image Tag')
+    // }
     environment {
         VAULT_ADDR = 'https://vault.htoohtoo.cloud:8443' // Replace with your Vault server address
         VAULT_BIN = "/usr/local/bin/vault" // Vault Binary Variable
@@ -120,7 +120,7 @@ pipeline {
             }
         }
         
-        stage("Print Message")  {
+        stage("Print Message Test")  {
             steps {
                 script {
                     sh """
