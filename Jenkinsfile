@@ -134,7 +134,7 @@ pipeline {
                         docker build -f Dockerfile -t ${env.CONTAINER_REGISTRY}/llm-obj-discovery:$BUILD_NUMBER .
 
                         # Log in to Docker registry
-                        echo ${env.CR_PASSWORD} | docker login -u ${env.CR_USERNAME} --password-stdin
+                        'echo ${env.CR_PASSWORD} | docker login -u ${env.CR_USERNAME} --password-stdin'
 
                         # Push image to registry
                         docker push ${env.CONTAINER_REGISTRY}/llm-obj-discovery:$BUILD_NUMBER
