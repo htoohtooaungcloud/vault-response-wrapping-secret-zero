@@ -120,12 +120,28 @@ pipeline {
             }
         }
         
-        stage("Print Message Test")  {
+        stage("Build, Tag and Push Docker Image")  {
             steps {
                 script {
                     sh """
-                      // Log in to Docker registry
-                        echo "Login to Container Registry Test"
+                        // Build Docker image
+                        cd $WORKSPACE/todo-app
+                        chmod +x -R ${env.WORKSPACE}
+                        echo "Changed Workspace Directory Permission"
+                        echo "Build Docker Image"
+                        docker build -f $WORKSPACE/todo-app/Dockerfile -t ${env.CONTAINER_REGISTRY}/llm-obj-discovery:$BUILD_NUMBER $WORKSPACE/.
+                        // Log in to Docker registry
+                        echo "Login to Container Registry"
+                        echo ${env.CR_PASSWORD} | docker login -u ${env.CR_USERNAME} --password-stdin
+                        // Build Number Push
+                        echo "1st time push to Container Registry"
+                        docker push ${env.CONTAINER_REGISTRY}/llm-obj-discovery:$BUILD_NUMBER
+                        // Tag Docker Image
+                        echo "Tag the Container Image"
+                        docker tag ${env.CONTAINER_REGISTRY}/llm-obj-discovery:$BUILD_NUMBER ${env.CONTAINER_REGISTRY}/llm-obj-discovery:${params.ImageTag}
+                        // Push Ready Docker Image
+                        echo "Push the Tag Final Container Image"
+                        docker push ${env.CONTAINER_REGISTRY}/llm-obj-discovery:${params.ImageTag}
                     """
                 }
             }
