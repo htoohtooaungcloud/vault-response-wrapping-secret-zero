@@ -45,14 +45,12 @@ pipeline {
                     usernameVariable: 'CR_USERNAME',
                     passwordVariable: 'CR_PASSWORD'
                 )]) {
-                    script {
-                        echo 'Fetched container registry credentials.'
-                    }
+                    echo 'Fetched container registry credentials.'
                 }
             }
         }
 
-        stage('Build, Tag, and Push Docker Image') {
+        stage("Build, Tag, and Push Docker Image") {
             steps {
                 withCredentials([usernamePassword(
                     credentialsId: 'container-registry-credentials',
@@ -61,23 +59,21 @@ pipeline {
                 )]) {
                     script {
                         sh """
-                            # Ensure correct permissions for files and directories
+                            # Ensure correct permissions
                             find ${env.WORKSPACE} -type d -exec chmod 755 {} +
                             find ${env.WORKSPACE} -type f -exec chmod 644 {} +
 
-                            # Navigate to the Docker build context
-                            cd ${env.WORKSPACE}/todo-app
-
                             # Build the Docker image
+                            cd ${env.WORKSPACE}/todo-app
                             docker build -f Dockerfile -t ${CONTAINER_REGISTRY}/llm-obj-discovery:$BUILD_NUMBER .
 
-                            # Log in to the Docker registry
-                            echo "$CR_PASSWORD" | docker login $CONTAINER_REGISTRY -u "$CR_USERNAME" --password-stdin
+                            # Log in to Docker registry securely
+                            echo "\${CR_PASSWORD}" | docker login $CONTAINER_REGISTRY -u "\${CR_USERNAME}" --password-stdin
 
-                            # Push the built image to the registry
+                            # Push the image to the registry
                             docker push ${CONTAINER_REGISTRY}/llm-obj-discovery:$BUILD_NUMBER
 
-                            # Tag the image and push the tagged version
+                            # Tag and push the final image
                             docker tag ${CONTAINER_REGISTRY}/llm-obj-discovery:$BUILD_NUMBER ${CONTAINER_REGISTRY}/llm-obj-discovery:${params.ImageTag}
                             docker push ${CONTAINER_REGISTRY}/llm-obj-discovery:${params.ImageTag}
                         """
@@ -86,7 +82,7 @@ pipeline {
             }
         }
     }
-    
+
     post {
         always {
             echo 'Pipeline execution completed.'
