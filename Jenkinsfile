@@ -127,7 +127,7 @@ pipeline {
                         # Set proper permissions
                         find ${env.WORKSPACE} -type d -exec chmod 755 {} +
                         find ${env.WORKSPACE} -type f -exec chmod 644 {} +
-                        chown -R jenkins:jenkins ${env.WORKSPACE}
+                        chown -R root:root ${env.WORKSPACE}
 
                         # Build Docker image
                         cd ${env.WORKSPACE}/todo-app
