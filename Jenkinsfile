@@ -125,7 +125,7 @@ pipeline {
                 script {
                     sh """
                       // Log in to Docker registry
-                        echo "Login to Container Registry"
+                        echo "Login to Container Registry Test"
                     """
                 }
             }
