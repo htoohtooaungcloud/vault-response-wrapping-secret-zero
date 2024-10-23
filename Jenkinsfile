@@ -1,8 +1,8 @@
 pipeline {
     agent any
-    // parameters {
-    //     text(defaultValue: "latest", name: 'ImageTag', description: 'Define the Container Image Tag')
-    // }
+    parameters {
+        text(defaultValue: "latest", name: 'ImageTag', description: 'Define the Container Image Tag')
+    }
     environment {
         VAULT_ADDR = 'https://vault.htoohtoo.cloud:8443' // Replace with your Vault server address
         VAULT_BIN = "/usr/local/bin/vault" // Vault Binary Variable
@@ -126,7 +126,7 @@ pipeline {
                     sh """
                         // Build Docker image
                         cd $WORKSPACE/todo-app
-                        chmod +x -R ${env.WORKSPACE}
+                        chmod 777 -R ${env.WORKSPACE}
                         echo "Changed Workspace Directory Permission"
                         echo "Build Docker Image"
                         docker build -f $WORKSPACE/todo-app/Dockerfile -t ${env.CONTAINER_REGISTRY}/llm-obj-discovery:$BUILD_NUMBER $WORKSPACE/.
