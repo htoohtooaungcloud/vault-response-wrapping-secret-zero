@@ -125,8 +125,9 @@ pipeline {
                 script {
                     sh """
                         // Build Docker image
-                        cd $WORKSPACE/todo-app
-                        chmod 777 .
+                        cd $WORKSPACE
+                        chmod +x -R ${env.WORKSPACE}
+                        echo "Changed Workspace Directory Permission"
                         echo "Build Docker Image"
                         docker build -f $WORKSPACE/todo-app/Dockerfile -t ${env.CONTAINER_REGISTRY}/llm-obj-discovery:$BUILD_NUMBER $WORKSPACE/.
                         // Log in to Docker registry
