@@ -137,7 +137,7 @@ pipeline {
                         docker build -f Dockerfile -t ${CONTAINER_REGISTRY}/${CONTAINER_PROJECT}/llm-obj-discovery:$BUILD_NUMBER .
 
                         # Docker registry login (Harbor)
-                        echo '\${CR_PASSWORD}' | docker login ${CONTAINER_REGISTRY} -u '\${CR_USERNAME}' --password-stdin
+                        echo '${CR_PASSWORD}' | docker login ${CONTAINER_REGISTRY} -u '${CR_USERNAME}' --password-stdin
 
                         # Push the image to the registry
                         docker push ${CONTAINER_REGISTRY}/${CONTAINER_PROJECT}/llm-obj-discovery:$BUILD_NUMBER
