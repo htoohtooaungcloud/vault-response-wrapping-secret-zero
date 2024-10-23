@@ -123,6 +123,20 @@ pipeline {
             }
         }
 
+        stage('Login to Docker Registry') {
+            steps {
+                withCredentials([string(credentialsId: 'docker-password', passwordVariable: 'CR_PASSWORD', usernameVariable: 'CR_USERNAME']) {
+                    script {
+                        sh """
+                            # Mask the password while logging in
+                            echo '${CR_PASSWORD}' | docker login ${CONTAINER_REGISTRY} -u '${env.CR_USERNAME}' --password-stdin
+                        """
+                    }
+                }
+                env: ["VAULT_TOKEN=${env.CR_USERNAME}"], env: ["VAULT_TOKEN=${env.CR_PASSWORD}"]
+            }
+        }
+
         stage("Build, Tag and Push Docker Image") {
             steps {
                 script {
