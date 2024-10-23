@@ -120,13 +120,12 @@ pipeline {
             }
         }
         
-        stage("Build, Tag and Push Docker Image")  {
+        stage("Print Message")  {
             steps {
                 script {
                     sh """
                       // Log in to Docker registry
                         echo "Login to Container Registry"
-                        echo ${env.CR_PASSWORD} | docker login -u ${env.CR_USERNAME} --password-stdin
                     """
                 }
             }
