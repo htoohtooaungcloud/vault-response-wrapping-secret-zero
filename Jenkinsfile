@@ -9,6 +9,8 @@ pipeline {
         VAULT_ADDR = 'https://vault.htoohtoo.cloud:8443'
         VAULT_BIN = "/usr/local/bin/vault"
         CONTAINER_REGISTRY = 'harbor.htoohtoo.cloud/hc-genai'
+        JENKINS_TRUSTED_ENTITY_ROLE = credentials('trusted-entity-role-id') // Credential stored in Jenkins environment
+        JENKINS_TRUSTED_ENTITY_SECRET = credentials('trusted-entity-secret-id') // Credential stored in Jenkins environment
     }
 
     stages {
