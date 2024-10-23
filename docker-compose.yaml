@@ -83,8 +83,8 @@ services:
     # user: root
     extra_hosts:
       - "vault.htoohtoo.cloud:192.168.1.43"
-    group_add:
-        - 997    # Should be the same group id as your host docker
+    # group_add:
+    #     - 997    # Should be the same group id as your host docker
     restart: on-failure
     # environment:
     #   DOCKER_HOST: "unix:///var/run/docker.sock"
