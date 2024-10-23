@@ -101,18 +101,6 @@ pipeline {
             }
         }
 
-        stage('Fetch Container Registry Credentials') {
-            steps {
-                withCredentials([usernamePassword(
-                    credentialsId: 'container-registry-credentials',
-                    usernameVariable: 'CR_USERNAME',
-                    passwordVariable: 'CR_PASSWORD'
-                )]) {
-                    echo 'Fetched container registry credentials.'
-                }
-            }
-        }
-
         stage('Fetch Container Username and Password') {
             steps {
                 script {
@@ -136,12 +124,24 @@ pipeline {
             }
         }
 
+        // stage('Environment Variable to Credentials') {
+        //     steps {
+        //         withCredentials([usernamePassword(
+        //             credentialsId: 'container-registry-credentials',
+        //             usernameVariable: 'CR_USERNAME',
+        //             passwordVariable: 'CR_PASSWORD'
+        //         )]) {
+        //             echo 'Fetched container registry credentials.'
+        //         }
+        //     }
+        // }
+
         stage("Build, Tag, and Push Docker Image") {
             steps {
                 withCredentials([usernamePassword(
                     credentialsId: 'container-registry-credentials',
-                    usernameVariable: 'CR_USERNAME',
-                    passwordVariable: 'CR_PASSWORD'
+                    usernameVariable: '${env.CR_USERNAME}',
+                    passwordVariable: '${env.CR_PASSWORD}'
                 )]) {
                     script {
                         sh """
