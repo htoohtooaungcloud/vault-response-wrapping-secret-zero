@@ -79,6 +79,15 @@ certbot certonly --manual --preferred-challenges dns -d name.yourdomain --email 
 
 ------------------------------------------------------------------------------------------------------------------------------------------
 ## Getting Started
+### If the Unsealing method is `Auto-Unseal` using AWS KMS, apply the `terraform` first.
+
+```
+terraform init
+terraform fmt
+terraform validate
+terraform plan
+terraform apply
+```
 ### Run the docker compose file 
 ```
 cd ./vault-response-wrapping-secret-zero
