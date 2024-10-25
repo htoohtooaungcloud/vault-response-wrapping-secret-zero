@@ -690,7 +690,7 @@ $ vault write -field=secret_id -f auth/approle/role/trusted-entity/secret-id
 - Follow the installation guide line from harbor official website.
 - Prefer install harbor on **VM** and generate SSL/TLS certificate.
 
-[***Harbor Installation and Configuration***](https://goharbor.io/docs/2.0.0/install-config/)
+[Harbor Installation and Configuration](https://goharbor.io/docs/2.0.0/install-config/)
 ------------------------------------------------------------------------------------------------------------------------------------------
 ## Integrate Jenkins and Github
 
