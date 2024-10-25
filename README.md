@@ -50,6 +50,7 @@
 ## Architecture 
 ![secret-zero-cicd](https://github.com/user-attachments/assets/cf65b5d1-3e99-457a-8235-1c9078aff7f9)
 **Figure-2**- High-level Architecture
+
 ------------------------------------------------------------------------------------------------------------------------------------------
 ## Prerequisite: 
 
@@ -143,7 +144,361 @@ This may also be found at: /var/jenkins_home/secrets/initialAdminPassword
 ```
 $ docker exec -i vault-server-1 ls -la /vault/config/
 ```
+# Mananged Vault Cluster using Terraform
+### This approach is the automated approach, initially need to understand how to configure against Vault Cluster using `Vault Command`
+### After unsealling Vault Cluster, Configure `tf-admin` AppRole Path
+```
+vault auth enable -path=tf-admin approle
+```
+### Write the admin policy for `tf-admin-policy`
+```
+vault auth enable -path=tf-admin approle
+```
+### List the Policy
+```
+vault policy list
+default
+tf-admin-policy
+root
+```
+### Admin Policy
+<details>
+<summary>Admin Policy</summary>
 
+```
+# Manage auth methods broadly across Vault
+path "auth/*" {
+  capabilities = ["create", "read", "update", "delete", "list"]
+}
+
+# Create, update, and delete auth methods
+path "sys/auth/*" {
+  capabilities = ["create", "update", "delete", "sudo"]
+}
+
+# List auth methods
+path "sys/auth" {
+  capabilities = ["read"]
+}
+
+# Create and manage ACL policies
+path "sys/policies/*" {
+  capabilities = ["create", "read", "update", "delete", "list"]
+}
+
+# To list policies - Step 3
+path "sys/policies/" {
+  capabilities = ["list"]
+}
+
+# List, create, update, and delete key/value secrets mounted under secret/
+path "secret/*" {
+  capabilities = ["create", "read", "update", "delete", "list"]
+}
+
+# List secret/
+path "secret/" {
+  capabilities = ["list"]
+}
+
+# Prevent admin users from reading user secrets
+# But allow them to create, update, delete, and list them
+path "secret/users/*" {
+  capabilities = ["create", "update", "delete", "list"]
+}
+
+# List, create, update, and delete key/value secrets mounted under kv/
+path "kv/*" {
+  capabilities = ["create", "read", "update", "delete", "list"]
+}
+
+# List kv/
+path "kv/" {
+  capabilities = ["list"]
+}
+
+# Prevent admin users from reading user secrets
+# But allow them to create, update, delete, and list them
+# Creating and updating are explicitly included here
+# Deleting and listing are implied by capabilities given on kv/* which includes kv/delete/users/* and kv/metadata/users/* paths
+path "kv/data/users/*" {
+  capabilities = ["create", "update"]
+}
+
+# Active Directory secrets engine
+path "ad/*" {
+  capabilities = ["create", "read", "update", "delete", "list"]
+}
+
+# Alicloud secrets engine
+path "alicloud/*" {
+  capabilities = ["create", "read", "update", "delete", "list"]
+}
+
+# AWS secrets engine
+path "aws/*" {
+  capabilities = ["create", "read", "update", "delete", "list"]
+}
+
+# Azure secrets engine
+path "azure/*" {
+  capabilities = ["create", "read", "update", "delete", "list"]
+}
+
+# Google Cloud secrets engine
+path "gcp/*" {
+  capabilities = ["create", "read", "update", "delete", "list"]
+}
+
+# Google Cloud KMS secrets engine
+path "gcpkms/*" {
+  capabilities = ["create", "read", "update", "delete", "list"]
+}
+
+# Consul secrets engine
+path "consul/*" {
+  capabilities = ["create", "read", "update", "delete", "list"]
+}
+
+# Cubbyhole secrets engine
+path "cubbyhole/*" {
+  capabilities = ["create", "read", "update", "delete", "list"]
+}
+
+# Database secrets engine
+path "database/*" {
+  capabilities = ["create", "read", "update", "delete", "list"]
+}
+
+# Identity secrets engine
+path "identity/*" {
+  capabilities = ["create", "read", "update", "delete", "list"]
+}
+
+# PKI secrets engine
+path "nomad/*" {
+  capabilities = ["create", "read", "update", "delete", "list"]
+}
+
+# Nomad secrets engine
+path "pki/*" {
+  capabilities = ["create", "read", "update", "delete", "list"]
+}
+
+# RabbitMQ secrets engine
+path "rabbitmq/*" {
+  capabilities = ["create", "read", "update", "delete", "list"]
+}
+
+# SSH secrets engine
+path "ssh/*" {
+  capabilities = ["create", "read", "update", "delete", "list"]
+}
+
+# TOTP secrets engine
+path "totp/*" {
+  capabilities = ["create", "read", "update", "delete", "list"]
+}
+
+# Transit secrets engine
+path "transit/*" {
+  capabilities = ["create", "read", "update", "delete", "list"]
+}
+
+# Create and manage secrets engines broadly across Vault.
+path "sys/mounts/*"
+{
+  capabilities = ["create", "read", "update", "delete", "list"]
+}
+
+# List sys/mounts/
+path "sys/mounts" {
+  capabilities = ["read"]
+}
+
+# Check token capabilities
+path "sys/capabilities" {
+  capabilities = ["create", "update"]
+}
+
+# Check token accessor capabilities
+path "sys/capabilities-accessor" {
+  capabilities = ["create", "update"]
+}
+
+# Check token's own capabilities
+path "sys/capabilities-self" {
+  capabilities = ["create", "update"]
+}
+
+# Audit hash
+path "sys/audit-hash" {
+  capabilities = ["create", "update"]
+}
+
+# Health checks
+path "sys/health" {
+  capabilities = ["read"]
+}
+
+# Host info
+path "sys/host-info" {
+  capabilities = ["read"]
+}
+
+# Key Status
+path "sys/key-status" {
+  capabilities = ["read"]
+}
+
+# Leader
+path "sys/leader" {
+  capabilities = ["read"]
+}
+
+# Plugins catalog
+path "sys/plugins/catalog/*" {
+  capabilities = ["create", "read", "update", "delete", "list"]
+}
+
+# List sys/plugins/catalog
+path "sys/plugins/catalog" {
+  capabilities = ["read"]
+}
+
+# Read system configuration state
+path "sys/config/state/sanitized" {
+  capabilities = ["read"]
+}
+
+# Use system tools
+path "sys/tools/*" {
+  capabilities = ["create", "update"]
+}
+
+# Generate OpenAPI docs
+path "sys/internal/specs/openapi" {
+  capabilities = ["read"]
+}
+
+# Lookup leases
+path "sys/leases/lookup" {
+  capabilities = ["create", "update"]
+}
+
+# Renew leases
+path "sys/leases/renew" {
+  capabilities = ["create", "update"]
+}
+
+# Revoke leases
+path "sys/leases/revoke" {
+  capabilities = ["create", "update"]
+}
+
+# Tidy leases
+path "sys/leases/tidy" {
+  capabilities = ["create", "update"]
+}
+
+# Telemetry
+path "sys/metrics" {
+  capabilities = ["read"]
+}
+
+# Seal Vault
+path "sys/seal" {
+  capabilities = ["create", "update", "sudo"]
+}
+
+# Unseal Vault
+path "sys/unseal" {
+  capabilities = ["create", "update", "sudo"]
+}
+
+# Step Down
+path "sys/step-down" {
+  capabilities = ["create", "update", "sudo"]
+}
+
+# Wrapping
+path "sys/wrapping/*" {
+  capabilities = ["create", "update"]
+}
+
+## Enterprise Features
+
+# Manage license
+path "sys/license/status" {
+  capabilities = ["create", "read", "update"]
+}
+
+# Use control groups
+path "sys/control-group/*" {
+  capabilities = ["create", "read", "update", "delete", "list"]
+}
+
+# MFA
+path "sys/mfa/*" {
+  capabilities = ["create", "read", "update", "delete", "list"]
+}
+
+# List MFA
+path "sys/mfa/" {
+  capabilities = ["list"]
+}
+
+# Namespaces
+path "sys/namespaces/*" {
+  capabilities = ["create", "read", "update", "delete", "list"]
+}
+
+# List sys/namespaces
+path "sys/namespaces/" {
+  capabilities = ["list"]
+}
+
+# Replication
+path "sys/replication/*" {
+  capabilities = ["create", "read", "update", "delete", "list"]
+}
+
+# Seal Wrap
+path "sys/sealwrap/rewrap" {
+  capabilities = ["create", "read", "update"]
+}
+
+# KMIP secrets engine
+path "kmip/*" {
+  capabilities = ["create", "read", "update", "delete", "list"]
+}
+```
+</details>
+
+### Read the Policy `tf-admin-policy`
+```
+vault policy read tf-admin-policy
+```
+### Create AppRole Auth Method ROLE at `auth/tf-admin/role/tf-admin-role` for Terraform
+```
+vault write auth/tf-admin/role/tf-admin-role  \
+    token_ttl=72h \
+    token_num_uses=0 \
+    secret_id_num_uses=0 \
+    token_policies="tf-admin-policy"
+```
+### Read that Role to get `Rold-ID`
+```
+vault read auth/tf-admin/role/tf-admin-role/role-id
+```
+### Write that Role to get `Secret-ID` with force
+```
+vault write -f auth/tf-admin/role/tf-admin-role/secret-id
+```
+### Pass these two credentials to `terraforn-variable.tfvars` file and then run the terraform code
+![terraform-variable tfvars](https://github.com/user-attachments/assets/fc68efd3-5a4f-4522-a096-b7ffd2528c11)
+
+---------------------------------------------------------------------------------------------------------------------------------------------
 ### Let's enable AppRole auth method for jenkins pipeline access
 1. The role of this Jenkins AppRole should be narrowed-scope since we just need to read and write the role-id and secret-id
 
@@ -186,7 +541,6 @@ path "auth/approle/role/+/role*" {
 vault write auth/approle/role/trusted-entity  \
     token_num_uses=2 \
     token_ttl=72h \
-    token_type=batch \
     secret_id_num_uses=0 \
     token_bound_cidrs="172.20.0.2/32" \
     secret_id_bound_cidrs="172.20.0.2/32" \
@@ -277,7 +631,6 @@ path "secret/data/container-registry" {
 ```
 $ vault policy write container-registry cr-secrets.hcl
 ```
-
 ### List the policy
 ```
 $ vault policy list
