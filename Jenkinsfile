@@ -1,20 +1,29 @@
 pipeline {
     agent any
-    environment {
-        VAULT_ADDR = 'https://vault.htoohtoo.cloud:8443' // Replace with your Vault server address
-        VAULT_BIN = "/usr/local/bin/vault" // Vault Binary Variable
-        JENKINS_TRUSTED_ENTITY_ROLE = credentials('trusted-entity-role-id') // Credential stored in Jenkins environment
-        JENKINS_TRUSTED_ENTITY_SECRET = credentials('trusted-entity-secret-id') // Credential stored in Jenkins environment
+
+    parameters {
+        text(defaultValue: "latest", name: 'ImageTag', description: 'Define the Container Image Tag')
     }
+
+    environment {
+        VAULT_ADDR = 'https://vault.htoohtoo.cloud:8443'
+        VAULT_BIN = "/usr/local/bin/vault"
+        CONTAINER_REGISTRY = 'harbor.htoohtoo.cloud'
+        CONTAINER_PROJECT = 'hc-genai'
+        JENKINS_TRUSTED_ENTITY_ROLE = credentials('trusted-entity-role-id') // Vault role credential
+        JENKINS_TRUSTED_ENTITY_SECRET = credentials('trusted-entity-secret-id') // Vault secret credential
+    }
+
     stages {
         stage('Checkout Code') {
             steps {
                 script {
-                    // Perform Git checkout using scmGit
                     checkout scmGit(
-                        branches: [[name: 'main']],
-                        userRemoteConfigs: [[credentialsId:  'jenkins-github',
-                            url: 'git@github.com:htoohtooaungcloud/vault-response-wrapping-secret-zero.git']]
+                        branches: [[name: 'genai-dev']],
+                        userRemoteConfigs: [[
+                            credentialsId: 'github-token',
+                            url: 'https://github.com/htoohtooaungcloud/vault-response-wrapping-secret-zero.git'
+                        ]]
                     )
                 }
             }
@@ -80,7 +89,7 @@ pipeline {
             }
         }
 
-        stage('Authenticate with Vault') {
+       stage('Authenticate with Vault') {
             steps {
                 script {
                     // Login to Vault with the RoleID and SecretID to retrieve the Vault token
@@ -93,27 +102,70 @@ pipeline {
             }
         }
 
-        stage('Fetch Container Username and Password') {
+        stage('Fetch Registry Credentials') {
             steps {
                 script {
-                    // Fetch secrets using the VAULT_TOKEN from the previous stage
                     def username = sh(
                         script: "${VAULT_BIN} kv get -field=username secret/container-registry",
                         returnStdout: true,
-                        env: [ "VAULT_TOKEN=${env.VAULT_TOKEN}" ]
+                        env: ["VAULT_TOKEN=${env.VAULT_TOKEN}"]
                     ).trim()
-                    
+
                     def password = sh(
                         script: "${VAULT_BIN} kv get -field=password secret/container-registry",
                         returnStdout: true,
-                        env: [ "VAULT_TOKEN=${env.VAULT_TOKEN}" ]
+                        env: ["VAULT_TOKEN=${env.VAULT_TOKEN}"]
                     ).trim()
-                    
-                    // Store the fetched username and password in environment variables
+
                     env.CR_USERNAME = username
                     env.CR_PASSWORD = password
                 }
             }
+        }
+
+        stage('Login to Container Registry') {
+            steps {
+                script {
+                    // Disable echo temporarily to mask credentials
+                    sh """
+                        # Docker registry login (Harbor)
+                        set +x
+                        echo '${env.CR_PASSWORD}' | docker login ${CONTAINER_REGISTRY} -u '${env.CR_USERNAME}' --password-stdin
+                        set -x
+                    """
+                }
+            }
+        }
+
+        stage("Build, Tag and Push Docker Image") {
+            steps {
+                script {
+                    sh """
+                        # Set permissions properly to avoid conflicts
+                        find ${env.WORKSPACE} -type d -exec chmod 755 {} +
+                        find ${env.WORKSPACE} -type f -exec chmod 644 {} +
+                        chown -R root:root ${env.WORKSPACE}
+
+                        # Build Docker image
+                        cd ${env.WORKSPACE}/todo-app
+                        docker build -f Dockerfile -t ${CONTAINER_REGISTRY}/${CONTAINER_PROJECT}/llm-obj-discovery:$BUILD_NUMBER .
+
+                        # Push the image to the registry
+                        docker push ${CONTAINER_REGISTRY}/${CONTAINER_PROJECT}/llm-obj-discovery:$BUILD_NUMBER
+
+                        # Tag and push the final version
+                        docker tag ${CONTAINER_REGISTRY}/${CONTAINER_PROJECT}/llm-obj-discovery:$BUILD_NUMBER ${CONTAINER_REGISTRY}/${CONTAINER_PROJECT}/llm-obj-discovery:${params.ImageTag}
+                        docker images
+                        docker push ${CONTAINER_REGISTRY}/${CONTAINER_PROJECT}/llm-obj-discovery:${params.ImageTag}
+                    """
+                }
+            }
+        }
+    }
+
+    post {
+        always {
+            echo 'Pipeline execution completed.'
         }
     }
 }

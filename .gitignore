@@ -1,0 +1,102 @@
+# General Patterns
+**/.env
+.env
+**/*.env
+
+# Terraform files
+*.tfvars
+*.tfvar
+terraform.tfvars
+**/.terraform/*
+.terraform/
+*.tfstate
+*.tfstate.*
+
+# Git tokens
+mytoken.txt
+
+# Directories
+logs/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+lerna-debug.log*
+pnpm-debug.log*
+node_modules/
+jspm_packages/
+web_modules/
+pids/
+lib-cov/
+coverage/
+nyc_output/
+grunt/
+bower_components/
+build/Release/
+cache/
+dist/
+.docusaurus/
+dynamodb/
+fusebox/
+serverless/
+temp/
+nuxt/
+next/
+.vscode-test/
+.vscode-test/
+
+# Compiled binary addons
+lock-wscript
+
+# Optional caches and temporary files
+.yarn-integrity
+.yarn/cache
+.yarn/unplugged
+.yarn/build-state.yml
+.yarn/install-state.gz
+.pnp.*
+npm/
+.env.*
+node_repl_history
+*.tgz
+*.pid
+*.seed
+*.pid.lock
+*.tsbuildinfo
+*.tgz
+
+# System-specific files
+.DS_Store
+
+# Certificates, Sensitive Data, and Logs
+nginx/archived/
+nginx/certificates/
+nginx/certbot/certbot-certs
+Procedure.md
+/vault-server-1/data.json
+
+# PostgreSQL data
+*/data/postgres
+DB_README.md
+
+# Front-end frameworks and builds
+.next
+.nuxt
+.vuepress/dist
+out
+
+# IDE Specific files
+node_modules/
+lib/
+.env.*
+package-lock.json
+
+# Miscellaneous tool cache or generated files
+.cache/
+.tern-port
+.eslintcache
+.stylelintcache
+.rpt2_cache/
+.rts2_cache_cjs/
+.rts2_cache_es/
+.rts2_cache_umd/
+.vscode-test

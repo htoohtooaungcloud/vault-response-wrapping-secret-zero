@@ -38,7 +38,7 @@
 - **Jenkins** will handle the CI/CD pipeline automation.
 - **Certbot** will generate SSL/TLS certificates. TLS is optional but will require adjustments to configuration files if omitted.
 - **Terraform** for provision the Cloud API resources as Infrastructure as Code automation.
-- **Postgresql** will be serve as database server for terraform `backend` for now.
+- **Terrform Cloud** will be serve as terraform `backend` and any workflow works fine.
 ------------------------------------------------------------------------------------------------------------------------------------------
 ## Goal
 1. Jenkins Pipeline should securely retrieve secrets with a narrow scope, and the `Token` must expire immediately after the secrets are retrieved.
@@ -55,8 +55,9 @@
 
 1. Install Docker engine, Terraform and docker compose plugin.
 2. Create AWS KMS for Auto-Unsealing mechanism using `Terraform`. Credentials will be export as `vault_kms_auto_unseal.env` and Vault Cluster will pick that file while running docker-compose file. 
-3. Before run any terraform commands, must spin up the `postgresql-db-01` container first and configure as needed. Refer to `DB_README.md`.
-4. Highly encourage to create new terraform local workspace by running `terraform workspace new <your-workspace-name>`. eg; 
+3. Change the `Terraform Cloud` Execution Mode from *Organization Default* to *Local(custom)*.
+![vault-secret-zero-backend](https://github.com/user-attachments/assets/d618b443-f274-456f-b6e9-bcf8ece8db6e)
+
 ```
 terraform workspace new vault-aws-kms
 ```
@@ -78,6 +79,15 @@ certbot certonly --manual --preferred-challenges dns -d name.yourdomain --email 
 
 ------------------------------------------------------------------------------------------------------------------------------------------
 ## Getting Started
+### If the Unsealing method is `Auto-Unseal` using AWS KMS, apply the `terraform` first.
+
+```
+terraform init
+terraform fmt
+terraform validate
+terraform plan
+terraform apply
+```
 ### Run the docker compose file 
 ```
 cd ./vault-response-wrapping-secret-zero
@@ -111,12 +121,20 @@ docker logs -f jenkins
 ```
 ### Log in to Jenkins using this password and just change the password immidiately
 ```
+*************************************************************
+*************************************************************
+*************************************************************
+
 Jenkins initial setup is required. An admin user has been created and a password generated.
 Please use the following password to proceed to installation:
 
-50492323cfd4475e814d74da74621644
+3d590fdb69e24a739bd6f8156a3866a6
 
 This may also be found at: /var/jenkins_home/secrets/initialAdminPassword
+
+*************************************************************
+*************************************************************
+*************************************************************
 
 ```
 --------------------------------------------------------------------------------------------------------------------------------------

@@ -79,12 +79,16 @@ services:
       context: .
       dockerfile: Dockerfile.jenkins
     hostname: jenkins
-    privileged: true
+    privileged: false
+    user: root
     extra_hosts:
       - "vault.htoohtoo.cloud:192.168.1.43"
+    # group_add:
+    #     - 997    # Should be the same group id as your host docker
     restart: on-failure
-    environment:
-      DOCKER_HOST: "unix:///var/run/docker.sock"
+    # environment:
+    #   DOCKER_HOST: "unix:///var/run/docker.sock"
+      # JENKINS_OPTS: --prefix=/jenkins
     ports:
       - '8080:8080'
       - '50000:50000'
@@ -117,30 +121,6 @@ services:
       - kind
       - vault-jenkins
       - vault-cluster
-
-# for terraform backend, this backend support * state file locking *
-  postgresql:
-    image: postgres:16
-    container_name: postgresql-db-01
-    env_file:
-    - ./db.env
-    hostname: postgresql-db-01
-    restart: unless-stopped
-    environment:
-      POSTGRES_USER: ${PGUSER}
-      POSTGRES_PASSWORD: ${PGPASSWORD}
-    ports:
-      - 5432:5432
-    volumes:
-      - postgresql_data:/var/lib/postgresql/data
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-    networks:
-      - kind
-      - vault-jenkins
 
   # certbot:
   #   image: certbot/certbot

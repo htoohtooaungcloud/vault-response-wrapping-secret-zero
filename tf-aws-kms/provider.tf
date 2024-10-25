@@ -5,8 +5,13 @@ terraform {
       version = "5.72.1"
     }
   }
-  backend "pg" {
-    conn_str = "postgres://192.168.1.43/terraform_backend?sslmode=disable"
+  cloud {
+
+    organization = "hc-multi-project"
+
+    workspaces {
+      name = "vault-secret-zero-response-wrapping"
+    }
   }
 }
 
