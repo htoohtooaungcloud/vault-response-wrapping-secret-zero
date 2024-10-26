@@ -697,9 +697,34 @@ $ vault write -field=secret_id -f auth/approle/role/trusted-entity/secret-id
 - Integrate using SSH key since Jenkins in running as on-prem vm
 - Jenkins side need to change `Dashboard` > `Manage Jenkins` > `Security` > `Git Host Key Verification Configuration`. Change it to `Accept first connection`. Default is `Known hosts file`.
 
-
+-------------------------------------------------------------------------------------------------------------------------------------------
+## Git: Reset Local Branch to Match Remote Branch (Duplicated)
+1. Fetch the Latest Changes from the Remote Repository
+```
+git fetch origin
+```
+2. Reset Your Local `main` Branch to Match the Remote `origin/main`.
+> [!NOTE]
+> Makes your local branch `identical` to the remote branch. Discards **all local changes and commits** (including any commits that haven’t been pushed).
+```
+git reset --hard origin/main
+```
+3. Verify Your Local Branch is Now Aligned
+```
+git status
+```
 ## Contributing
-
+### Should see the following output:
+```
+On branch main
+Your branch is up to date with 'origin/main'.
+nothing to commit, working tree clean
+```
+4. (Optional) Clean Up Untracked Files
+```
+git clean -fd
+```
+---------------------------------------------------------------------------------------------------------------------------------------------
 Contributions are welcome! Please follow these guidelines:
 
 1. **Fork the Repository**
