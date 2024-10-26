@@ -2,8 +2,9 @@ pipeline {
     agent any  // Use any available Jenkins agent
 
     environment {
-        // Use the current branch name to dynamically set the path to the .tfvars file
-        TFVARS_FILE = "${WORKSPACE}/../tf-vars/${BRANCH_NAME}.tfvars" 
+        // Use the Jenkins-provided GIT_BRANCH environment variable to set the tfvars file path
+        BRANCH_NAME = "${env.GIT_BRANCH}".replaceFirst(/^origin\//, '')  // Strip 'origin/' prefix if present
+        TFVARS_FILE = "${env.WORKSPACE}/../tf-vars/${BRANCH_NAME}.tfvars"
     }
 
     parameters {
@@ -27,15 +28,14 @@ pipeline {
     stages {
         stage('Checkout Code') {
             steps {
-                script {
-                    checkout scmGit(
-                        branches: [[name: 'tf-pipeline']],
-                        userRemoteConfigs: [[
-                            credentialsId: 'github-token',
-                            url: 'https://github.com/htoohtooaungcloud/vault-response-wrapping-secret-zero.git'
-                        ]]
-                    )
-                }
+                // Checkout the correct branch from the repository
+                checkout([$class: 'GitSCM',
+                    branches: [[name: "*/${BRANCH_NAME}"]],
+                    userRemoteConfigs: [[
+                        url: 'https://github.com/htoohtooaungcloud/vault-response-wrapping-secret-zero.git',
+                        credentialsId: 'github-token'
+                    ]]
+                ])
             }
         }
 
@@ -44,14 +44,14 @@ pipeline {
                 script {
                     switch (params.TARGET_DIR) {
                         case 'tf-aws-kms':
-                            echo 'Working in tf-aws-kms directory'
+                            echo "Working in tf-aws-kms directory"
                             dir('tf-aws-kms') {
                                 runTerraform(params.ACTION)
                             }
                             break
 
                         case 'tf-vault-setup':
-                            echo 'Working in tf-vault-setup directory'
+                            echo "Working in tf-vault-setup directory"
                             dir('tf-vault-setup') {
                                 runTerraform(params.ACTION)
                             }
@@ -73,6 +73,11 @@ pipeline {
 }
 
 def runTerraform(action) {
+    // Check if the .tfvars file exists before proceeding
+    if (!fileExists(env.TFVARS_FILE)) {
+        error "The variables file ${env.TFVARS_FILE} does not exist!"
+    }
+
     switch (action) {
         case 'plan':
             echo "Running Terraform plan with var file ${env.TFVARS_FILE}..."
