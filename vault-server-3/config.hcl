@@ -23,7 +23,7 @@ seal "awskms" {
   region     = "${AWS_REGION}"
   kms_key_id = "${VAULT_AWSKMS_SEAL_KEY_ID}"
 }
-api_addr = "http://vault-server-3:8200"
+api_addr = "http://vault-server-3:8220"
 cluster_addr = "http://vault-server-3:8201"
 cluster_name = "vault-ha-cluster"
 ui = true
