@@ -39,7 +39,7 @@ pipeline {
             }
         }
 
-        stage('Select Directory and Run Terraform') {
+        stage('Select Terraform Directory and Run Terraform') {
             steps {
                 script {
                     switch (params.TARGET_DIR) {
@@ -88,7 +88,7 @@ def runTerraform(action) {
         case 'apply':
             echo "Running Terraform apply with var file ${env.TFVARS_FILE}..."
             sh 'terraform init'
-            sh "terraform apply -var-file=${env.TFVARS_FILE} --auto-approve tfplan"
+            sh "terraform apply -var-file=${env.TFVARS_FILE} --auto-approve"
             break
 
         case 'destroy':
