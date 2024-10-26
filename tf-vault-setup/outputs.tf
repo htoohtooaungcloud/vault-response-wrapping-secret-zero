@@ -17,6 +17,6 @@ output "trusted_entity_approle_role_id" {
 # Output the AppRole Secret-ID for Jenkins
 output "trusted_entity_approle_role_secret_id" {
   description = "This is AppRole Role Secred ID for Trusted Entity"
-  value       = nonsensitive(vault_approle_auth_backend_role_secret_id.trusted_entity_role_sid.secret_id)
+  value       = vault_approle_auth_backend_role_secret_id.trusted_entity_role_sid.secret_id
   sensitive   = true
 }

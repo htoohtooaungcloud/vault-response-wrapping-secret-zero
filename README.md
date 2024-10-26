@@ -152,7 +152,7 @@ vault auth enable -path=tf-admin approle
 ```
 ### Write the admin policy for `tf-admin-policy`
 ```
-vault auth enable -path=tf-admin approle
+vault policy write tf-admin-policy tf-admin-policy.hcl
 ```
 ### List the Policy
 ```
@@ -499,7 +499,7 @@ vault write -f auth/tf-admin/role/tf-admin-role/secret-id
 ![terraform-variable tfvars](https://github.com/user-attachments/assets/fc68efd3-5a4f-4522-a096-b7ffd2528c11)
 
 ---------------------------------------------------------------------------------------------------------------------------------------------
-### Let's enable AppRole auth method for jenkins pipeline access
+### Let's enable Vautl AppRole Auth Method for Jenkins Pipeline
 1. The role of this Jenkins AppRole should be narrowed-scope since we just need to read and write the role-id and secret-id
 
 ### Enable AppRole Auth Method First
@@ -660,17 +660,14 @@ vault write auth/approle/role/container-registry  \
     token_policies="container-registry"
 ```
 --------------------------------------------------------------------------------------------------------------------------------------
-## Jenkins part
 
-### Jenkins need to install `Vault` CLI or copy over the `Vault` binary to this path `/usr/local/bin/` in the jenkins container
-```
-docker cp vault hellocloud-jenkins-1:/usr/local/bin/
-```
+### Jenkins Configuration
 
-### In Jenkins UI, install HashiCopr Vault pluggins
+
+#### In Jenkins UI, install HashiCopr Vault pluggins
 
 ------------------------------------------------------------------------------------------------------------------------------------------
-## Get the Trusted-Entity RoldId and SecretID for Jenkins Pipeline
+### Get the Trusted-Entity RoldID and SecretID for Jenkins Pipeline
 ### Read the Role-id
 ```
 $ vault read -field=role_id auth/approle/role/trusted-entity/role-id

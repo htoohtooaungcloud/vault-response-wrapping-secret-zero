@@ -44,27 +44,14 @@ variable "auth_backend_type" {
   default     = "approle"
 }
 
+# Vautl Authentication Method Custom Path
 # variable "auth_backend_path" {
 #   description = "Approle Auth Backend Path"
-#   default     = "approle"
+#   default     = "your-custom-auth-method-path"
 # }
 
+# Vautl AppRole Authentication ROLE name
 variable "trusted_entity_policy_approle_role_name" {
   description = "Vault Trusted Entity AppRole ROle Name"
   default     = "trusted-entity"
-}
-
-variable "admin_policy" {
-  description = "Admin Policy Name for Approle"
-  default     = "admin_secret_policy"
-}
-
-variable "db_approle_role_name" {
-  description = "db Role Name for Approle"
-  default     = "db-secret-approle"
-}
-
-variable "admin_approle_role_name" {
-  description = "Admin Role Name for Approle"
-  default     = "admin-approle"
 }
