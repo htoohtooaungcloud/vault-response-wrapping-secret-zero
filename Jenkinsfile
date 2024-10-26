@@ -10,7 +10,7 @@ pipeline {
     parameters {
         choice(
             name: 'TARGET_DIR',
-            choices: ['tf-aws-kms', 'tf-vault-setup'],
+            choices: ['tf-vault-setup', 'tf-aws-kms'],
             description: 'Select the directory to run the Terraform commands.'
         )
         choice(
