@@ -3,7 +3,7 @@ pipeline {
 
     environment {
         // Use the current branch name to dynamically set the path to the .tfvars file
-        TFVARS_FILE = "${WORKSPACE}/../tf-vars/${BRANCH_NAME}.tfvars" 
+        TFVARS_FILE = "${JENKINS_HOME}/workspace/${WORKSPACE}/../tf-vars/${BRANCH_NAME}.tfvars" 
     }
 
     parameters {
