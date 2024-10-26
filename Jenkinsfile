@@ -93,7 +93,6 @@ def runTerraform(action) {
 
         case 'destroy':
             if (params.CONFIRM_DESTROY) {
-                input message: 'Are you sure you want to destroy the resources?', ok: 'Yes'
                 echo "Running Terraform destroy with var file ${env.TFVARS_FILE}..."
                 sh 'terraform init'
                 sh "terraform destroy -var-file=${env.TFVARS_FILE} --auto-approve"
