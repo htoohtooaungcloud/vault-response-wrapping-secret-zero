@@ -29,7 +29,7 @@ pipeline {
             steps {
                 script {
                     checkout scmGit(
-                        branches: [[name: 'genai-dev']],
+                        branches: [[name: 'tf-pipeline']],
                         userRemoteConfigs: [[
                             credentialsId: 'github-token',
                             url: 'https://github.com/htoohtooaungcloud/vault-response-wrapping-secret-zero.git'
