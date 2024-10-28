@@ -38,20 +38,27 @@ variable "kv_secret_cr_password" {
   default     = "your-secret -id" # This should be in .tfvars
 }
 
-# Vautl Authentication Backend Type AppRole
+# Vault Authentication Backend Type AppRole
 variable "auth_backend_type" {
   description = "Backend type for Approle Auth Method"
   default     = "approle"
 }
 
-# Vautl Authentication Method Custom Path
+# Vault Authentication Method Custom Path
 # variable "auth_backend_path" {
 #   description = "Approle Auth Backend Path"
 #   default     = "your-custom-auth-method-path"
 # }
 
-# Vautl AppRole Authentication ROLE name
+# Vault AppRole Trusted-Entity Authentication ROLE name 
 variable "trusted_entity_policy_approle_role_name" {
   description = "Vault Trusted Entity AppRole ROle Name"
   default     = "trusted-entity"
 }
+
+# Vault AppRole Container Registry Authentication ROLE name 
+variable "container_registry_approle_role_name" {
+  description = "Vault Container Registry  AppRole Role Name"
+  default     = "container-registry"
+}
+

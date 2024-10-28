@@ -8,6 +8,12 @@ output "trusted_entity_policy" {
   value       = vault_policy.trusted_entity_policy.policy
 }
 
+output "container_registry_policy_policy" {
+  description = "This is Policy defined for Trusted Entity AppROle"
+  value       = vault_policy.container_registry_policy.policy
+}
+
+
 # Output the AppRole Role-ID for Jenkins
 output "trusted_entity_approle_role_id" {
   description = "This is AppRole Role ID of Trusted Entity Secret Path"
