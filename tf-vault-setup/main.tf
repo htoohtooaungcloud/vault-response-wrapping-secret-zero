@@ -51,6 +51,12 @@ resource "vault_approle_auth_backend_role" "trusted_entity_approle_role" {
   secret_id_bound_cidrs = ["172.19.0.4/32"] # Could it be Jenkins Server's IP Address or Load-Balancer's IP Address as LIST
   token_policies        = [vault_policy.trusted_entity_policy.name]
 
+  lifecycle {
+    ignore_changes = [
+      backend,
+    ]
+  }
+
 }
 
 # Uses "Push" mode and get the Secret-ID
