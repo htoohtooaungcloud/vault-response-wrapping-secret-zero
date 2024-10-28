@@ -66,8 +66,11 @@ pipeline {
     }
 
     post {
-        always {
-            echo 'Pipeline completed.'
+        failure {
+            echo 'Terraform pipeline failed.'
+        }
+        success {
+            echo 'Terraform pipeline completed successfully.'
         }
     }
 }
@@ -87,14 +90,12 @@ def runTerraform(action) {
 
         case 'apply':
             echo "Running Terraform apply with var file ${env.TFVARS_FILE}..."
-            sh 'terraform init'
             sh "terraform apply -var-file=${env.TFVARS_FILE} --auto-approve"
             break
 
         case 'destroy':
             if (params.CONFIRM_DESTROY) {
                 echo "Running Terraform destroy with var file ${env.TFVARS_FILE}..."
-                sh 'terraform init'
                 sh "terraform destroy -var-file=${env.TFVARS_FILE} --auto-approve"
             } else {
                 echo 'Destroy action was not confirmed. Skipping destroy.'
