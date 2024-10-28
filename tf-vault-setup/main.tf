@@ -62,12 +62,12 @@ resource "vault_approle_auth_backend_role_secret_id" "trusted_entity_role_sid" {
   role_name = vault_approle_auth_backend_role.trusted_entity_approle_role.role_name
 }
 
-# Create Container Registry Secret AppRole
-resource "vault_auth_backend" "container_registry_approle" {
-  description = "Vault Container Registry AppRole Auth Method"
-  type        = var.auth_backend_type
-  # path        = var.auth_backend_path
-}
+# # Create Container Registry Secret AppRole
+# resource "vault_auth_backend" "container_registry_approle" {
+#   description = "Vault Container Registry AppRole Auth Method"
+#   type        = var.auth_backend_type
+#   # path        = var.auth_backend_path
+# }
 
 # Create AppRole Role to retrieve the secret from Vault via Pipeline 
 resource "vault_approle_auth_backend_role" "container_registry_secret_approle_role" {
