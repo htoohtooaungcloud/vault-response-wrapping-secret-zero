@@ -58,7 +58,7 @@ resource "vault_approle_auth_backend_role" "trusted_entity_approle_role" {
 
 # Uses "Push" mode and get the Secret-ID
 resource "vault_approle_auth_backend_role_secret_id" "trusted_entity_role_sid" {
-  backend   = vault_auth_backend.trusted_entity_approle.path
+  backend   = vault_auth_backend.approle_path.path
   role_name = vault_approle_auth_backend_role.trusted_entity_approle_role.role_name
 }
 

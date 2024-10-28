@@ -26,3 +26,10 @@ output "trusted_entity_approle_role_secret_id" {
   value       = vault_approle_auth_backend_role_secret_id.trusted_entity_role_sid.secret_id
   sensitive   = true
 }
+
+
+# Output the AppRole Auth Method Path
+output "vault_auth_backend_approle_path" {
+  description = "This is AppRole Role Path"
+  value       = vault_auth_backend.approle_path
+}
