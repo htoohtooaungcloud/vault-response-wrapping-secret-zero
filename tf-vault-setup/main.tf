@@ -47,8 +47,8 @@ resource "vault_approle_auth_backend_role" "trusted_entity_approle_role" {
   secret_id_num_uses    = 0    # Can use the secret-id infinitely
   token_ttl             = 1440 # Suggest to check how often required to build 
   token_max_ttl         = 4320
-  token_bound_cidrs     = ["172.19.0.4/32"] # Could it be Jenkins Server's IP Address or Load-Balancer's IP Address as LIST
-  secret_id_bound_cidrs = ["172.19.0.4/32"] # Could it be Jenkins Server's IP Address or Load-Balancer's IP Address as LIST
+  token_bound_cidrs     = ["172.20.0.3/32"] # Could it be Jenkins Server's IP Address or Load-Balancer's IP Address as LIST
+  secret_id_bound_cidrs = ["172.20.0.3/32"] # Could it be Jenkins Server's IP Address or Load-Balancer's IP Address as LIST
   token_policies        = [vault_policy.trusted_entity_policy.name]
   depends_on  = [vault_auth_backend.approle_path]
 }
@@ -68,8 +68,8 @@ resource "vault_approle_auth_backend_role" "container_registry_secret_approle_ro
   token_max_ttl         = 200
   secret_id_num_uses    = 2    
   secret_id_ttl         = 200  
-  token_bound_cidrs     = ["172.19.0.4/32"] # Could it be Jenkins Server's IP Address or Load-Balancer's IP Address as LIST
-  secret_id_bound_cidrs = ["172.19.0.4/32"] # Could it be Jenkins Server's IP Address or Load-Balancer's IP Address as LIST
+  token_bound_cidrs     = ["172.20.0.3/32"] # Could it be Jenkins Server's IP Address or Load-Balancer's IP Address as LIST
+  secret_id_bound_cidrs = ["172.20.0.3/32"] # Could it be Jenkins Server's IP Address or Load-Balancer's IP Address as LIST
   token_policies        = [vault_policy.container_registry_policy.name]
   depends_on  = [vault_auth_backend.approle_path]
 }
