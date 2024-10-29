@@ -59,21 +59,6 @@ pipeline {
             }
         }
 
-        stage('Unwrap and Use SecretID') {
-            steps {
-                script {
-                    // Unwrap to get the SecretID
-                    def secretId = sh(
-                        script: "${VAULT_BIN} unwrap -field=secret_id ${env.WRAPPED_SECRET_ID}",
-                        returnStdout: true
-                    ).trim()
-                    
-                    // Use the unwrapped SecretID as needed
-                    env.SECRET_ID = secretId
-                }
-            }
-        }
-
         stage('Retrieve RoleID') {
             steps {
                 script {
@@ -85,6 +70,21 @@ pipeline {
                     
                     // Use the RoleID as needed
                     env.ROLE_ID = roleId
+                }
+            }
+        }
+        
+        stage('Unwrap and Use SecretID') {
+            steps {
+                script {
+                    // Unwrap to get the SecretID
+                    def secretId = sh(
+                        script: "${VAULT_BIN} unwrap -field=secret_id ${env.WRAPPED_SECRET_ID}",
+                        returnStdout: true
+                    ).trim()
+                    
+                    // Use the unwrapped SecretID as needed
+                    env.SECRET_ID = secretId
                 }
             }
         }
