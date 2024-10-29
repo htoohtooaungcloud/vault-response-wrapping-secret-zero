@@ -119,10 +119,6 @@ pipeline {
 
                     env.CR_USERNAME = username
                     env.CR_PASSWORD = password
-
-                    // Mask the credentials and echo them
-                    echo "${CR_USERNAME}"
-                    echo "${CR_PASSWORD}"
                 }
             }
         }
