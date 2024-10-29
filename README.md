@@ -538,7 +538,7 @@ path "auth/approle/role/+/role*" {
 ### Let config Approle's Role, the path is `auth/approle/role` and the name is `jenkins-vault-role`. (Narrow-scope and CIDR bound)
 ### Attached the trusted-entity-policy
 ```
-vault write auth/tf-admin/role/trusted-entity  \
+vault write auth/approle/role/trusted-entity  \
     token_num_uses=2 \
     token_ttl=72h \
     secret_id_num_uses=0 \
