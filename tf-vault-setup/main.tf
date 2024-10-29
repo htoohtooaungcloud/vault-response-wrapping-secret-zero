@@ -43,7 +43,7 @@ resource "vault_auth_backend" "approle_path" {
 resource "vault_approle_auth_backend_role" "trusted_entity_approle_role" {
   backend               = vault_auth_backend.approle_path.path
   role_name             = var.trusted_entity_policy_approle_role_name
-  token_num_uses        = 2    # Usage number of the token that generated after authenticated to Vault
+  token_num_uses        = 3    # Usage number of the token that generated after authenticated to Vault
   secret_id_num_uses    = 0    # Can use the secret-id infinitely
   token_ttl             = 1440 # Suggest to check how often required to build 
   token_max_ttl         = 4320
