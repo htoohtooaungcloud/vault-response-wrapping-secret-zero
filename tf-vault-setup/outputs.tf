@@ -33,9 +33,3 @@ output "vault_auth_backend_approle_path" {
   description = "This is AppRole Role Path"
   value       = vault_auth_backend.approle_path.path
 }
-
-# Output the Trusted-Entity AppRole Backend path
-output "vault_auth_backend_approle_path_trusted_entity" {
-  description = "This is AppRole Role Path"
-  value       = vault_approle_auth_backend_role.trusted_entity_approle_role.backend
-}
