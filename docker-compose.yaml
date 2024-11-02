@@ -122,6 +122,25 @@ services:
       - vault-jenkins
       - vault-cluster
 
+  hc-managed-db:
+    hostname: hc-managed-db
+    container_name: hc-managed-db
+    image: harbor.htoohtoo.cloud/school-app/hc-managed-db:0.1.1
+    environment:
+      - POSTGRES_DB=school_db
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./db:/docker-entrypoint-initdb.d
+      - postgresql_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
   # certbot:
   #   image: certbot/certbot
   #   container_name: certbot
